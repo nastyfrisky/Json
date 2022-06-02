@@ -6,12 +6,13 @@
 //
 
 import UIKit
+import Alamofire
 
 class TrackListViewController: UIViewController {
     
     // MARK: - Private Properties
     
-    private let query = "Алла Пугачева"
+    private let query = "Киркоров"
     private let networkManager = NetworkManager()
     private let trackListTable = UITableView()
     private let showButton = UIButton()
@@ -79,16 +80,17 @@ class TrackListViewController: UIViewController {
         ])
     }
     
-    private func handleResponse(searchResult: SearchResult?, error: String?) {
+    private func handleResponse(result: Result<[TrackData], NetworkError>) {
         hideLoading()
         
-        if let result = searchResult?.results {
-            self.trackList = result
+        switch result {
+        case .success(let searchResult):
+            self.trackList = searchResult
             trackListTable.reloadData()
-        } else {
+        case .failure(let error):
             let alertController = UIAlertController(
                 title: "Error",
-                message: error,
+                message: error.rawValue,
                 preferredStyle: .alert
             )
                 
